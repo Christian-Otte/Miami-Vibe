@@ -8,13 +8,27 @@
 </head>
 <body>
     <div class="welcome-screen">
-        <h1>Welcome to Miami Tic Tac Toe!</h1>
-        <input type="text" id="username" placeholder="Enter your username" />
-        <button id="start-game">Start New Game</button>
+        <h1>Miami Tic Tac Toe</h1>
+        <div class="score-board">
+            <h3>Scoreboard</h3>
+            <ul id="scoreboard-list"></ul>
+        </div>
+        <div class="player-options">
+            <label for="player-mode">Choose mode:</label>
+            <select id="player-mode">
+                <option value="1">Single Player</option>
+                <option value="2">Two Players</option>
+            </select>
+        </div>
+        <div id="player-names">
+            <input type="text" id="player1-name" placeholder="Player 1 Name" />
+            <input type="text" id="player2-name" placeholder="Player 2 Name" style="display:none;" />
+        </div>
+        <button id="start-game">Start Game</button>
     </div>
     <div class="game-screen" style="display: none;">
         <h2 id="player-turn"></h2>
-        <div class="board">
+        <div class="game-board">
             <div class="cell" data-index="0"></div>
             <div class="cell" data-index="1"></div>
             <div class="cell" data-index="2"></div>
@@ -30,6 +44,14 @@
             <h3>Score</h3>
             <p id="score-display">Player: 0</p>
         </div>
+    </div>
+    <div class="winner-screen" style="display: none;">
+        <h2 id="winner-message"></h2>
+        <div class="score-board">
+            <h3>Scoreboard</h3>
+            <ul id="winner-scoreboard-list"></ul>
+        </div>
+        <button id="play-again">Play Again</button>
     </div>
     <script src="scripts/main.js"></script>
     <script src="scripts/game.js"></script>

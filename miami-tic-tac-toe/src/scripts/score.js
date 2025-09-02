@@ -30,4 +30,4 @@ const score = {
     }
 };
 
-export default score;
+// Remove export for browser compatibility

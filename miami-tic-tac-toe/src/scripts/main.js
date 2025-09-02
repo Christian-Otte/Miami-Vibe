@@ -1,38 +1,79 @@
 // main.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    const startButton = document.getElementById('start-button');
-    const gameContainer = document.getElementById('game-container');
-    const welcomeContainer = document.getElementById('welcome-container');
-    const usernameInput = document.getElementById('username-input');
-    const usernameDisplay = document.getElementById('username-display');
-    const scoreDisplay = document.getElementById('score-display');
+    // Always 2 player mode
+    const startButton = document.getElementById('start-game');
+    const player1Input = document.getElementById('player1-name');
+    const player2Input = document.getElementById('player2-name');
+    const scoreboardList = document.getElementById('scoreboard-list');
+    const welcomeScreen = document.querySelector('.welcome-screen');
+    const gameScreen = document.querySelector('.game-screen');
 
-    let username = '';
-    let playerScores = { player1: 0, player2: 0 };
+    let scoreboard = [];
+    let playerNames = { player1: '', player2: '' };
 
+    // Hide any single player options if present
+    if (document.getElementById('player-mode')) {
+        document.getElementById('player-mode').style.display = 'none';
+    }
+    if (player2Input) {
+        player2Input.style.display = '';
+    }
+
+    // Detect player mode from dropdown (if present)
+    let playerMode = 2;
+    const playerModeSelect = document.getElementById('player-mode');
+    if (playerModeSelect) {
+        playerMode = parseInt(playerModeSelect.value, 10);
+        playerModeSelect.addEventListener('change', () => {
+            playerMode = parseInt(playerModeSelect.value, 10);
+            if (playerMode === 1) {
+                player2Input.style.display = 'none';
+            } else {
+                player2Input.style.display = '';
+            }
+        });
+    }
+
+    // Store last used playerMode for Play Again
+    let lastPlayerMode = playerMode;
+
+    // Render scoreboard
+    function renderScoreboard() {
+        scoreboardList.innerHTML = scoreboard.map(
+            s => `<li>${s.player1} vs ${s.player2}: ${s.result}</li>`
+        ).join('');
+    }
+
+    // Show winner screen and update scoreboard after game ends
+    function handleGameEnd(result) {
+        scoreboard.push(result);
+        renderScoreboard();
+        gameScreen.style.display = 'none';
+        const winnerScreen = document.querySelector('.winner-screen');
+        winnerScreen.style.display = '';
+        document.getElementById('winner-message').textContent = result.result.includes('Draw') ? 'Draw!' : `${result.player1} wins!`;
+        const winnerScoreboardList = document.getElementById('winner-scoreboard-list');
+        winnerScoreboardList.innerHTML = scoreboard.map(
+            s => `<li>${s.player1} vs ${s.player2}: ${s.result}</li>`
+        ).join('');
+        document.getElementById('play-again').onclick = () => {
+            winnerScreen.style.display = 'none';
+            welcomeScreen.style.display = 'none';
+            gameScreen.style.display = '';
+            window.startTicTacToeGame(playerNames, lastPlayerMode, scoreboard, handleGameEnd);
+        };
+    }
+
+    // Start game button
     startButton.addEventListener('click', () => {
-        username = usernameInput.value.trim();
-        if (username) {
-            usernameDisplay.textContent = username;
-            welcomeContainer.style.display = 'none';
-            gameContainer.style.display = 'block';
-            initializeGame();
-        } else {
-            alert('Please enter a username to start the game.');
-        }
+        playerNames.player1 = player1Input.value.trim() || 'Player 1';
+        playerNames.player2 = player2Input.value.trim() || (playerMode === 1 ? 'Bot' : 'Player 2');
+        lastPlayerMode = playerMode;
+        welcomeScreen.style.display = 'none';
+        gameScreen.style.display = '';
+        window.startTicTacToeGame(playerNames, playerMode, scoreboard, handleGameEnd);
     });
 
-    function initializeGame() {
-        // Initialize game logic and UI
-        const game = new Game(playerScores);
-        game.start();
-        updateScoreDisplay();
-    }
-
-    function updateScoreDisplay() {
-        scoreDisplay.textContent = `Player 1: ${playerScores.player1} - Player 2: ${playerScores.player2}`;
-    }
-
-    // Additional event listeners and functions can be added here
+    renderScoreboard();
 });
