@@ -51,6 +51,11 @@
     <p>Select a mode:</p>
     <button onclick="startGame(false)">Single Player (W/S)</button>
     <button onclick="startGame(true)">2 Player (W/S & O/L)</button>
+    <label style="margin-top:1.5em; font-size:1.1em; color:#fffbe7; text-shadow:0 0 8px #0ff0b3;">
+      Play to 
+      <input id="winLimitInput" type="number" min="1" max="20" value="5" style="width:3em; font-size:1em; border-radius:4px; border:none; padding:2px 6px; margin:0 4px;">
+      wins
+    </label>
     <p style="margin-top:2em;font-size:0.9em;opacity:0.7;">Player 1 controls: W/S<br>Player 2 controls: O/L</p>
   </div>
   <h1 style="display:none;">Palm City Paddle</h1>
@@ -61,6 +66,9 @@
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
 
+    // Configurable win limit (default 5, can be changed on start screen)
+    let WIN_LIMIT = 5;
+
     const state = {
       paddleLeft:  { x: 20, y: canvas.height/2 - 40, w: 12, h: 80, dy: 0, speed: 6 },
       paddleRight: { x: canvas.width - 32, y: canvas.height/2 - 40, w: 12, h: 80, dy: 0, speed: 6 },
@@ -68,11 +76,17 @@
       score:       { left: 0, right: 0 }
     };
 
+    let running = false;
+    let paused = false;
+    let winner = null;
+
     const keys = new Set();
     addEventListener('keydown', e => keys.add(e.key.toLowerCase()));
     addEventListener('keyup',   e => keys.delete(e.key.toLowerCase()));
 
     function update() {
+      if (winner) return; // Stop updating if game is over
+
       // Player 1 (left): W/S
       const pL = state.paddleLeft;
       pL.dy = (keys.has('w') ? -1 : 0) + (keys.has('s') ? 1 : 0);
@@ -102,8 +116,20 @@
       }
 
       // Scoring
-      if (b.x < 0)  { state.score.right++; resetBall(-1); }
-      if (b.x > canvas.width) { state.score.left++;  resetBall(1); }
+      if (b.x < 0)  { state.score.right++; checkWinner(); if(!winner) resetBall(-1); }
+      if (b.x > canvas.width) { state.score.left++;  checkWinner(); if(!winner) resetBall(1); }
+    }
+
+    function checkWinner() {
+      if (state.score.left >= WIN_LIMIT) {
+        winner = "Player 1";
+        running = false;
+        showWinnerScreen(winner);
+      } else if (state.score.right >= WIN_LIMIT) {
+        winner = twoPlayer ? "Player 2" : "AI";
+        running = false;
+        showWinnerScreen(winner);
+      }
     }
 
     function resetBall(dir = 1) {
@@ -148,20 +174,39 @@
       ctx.shadowBlur = 0;
     }
 
-    let running = false;
-    let paused = false;
+    function showWinnerScreen(winnerName) {
+      // Overlay winner screen
+      ctx.save();
+      ctx.globalAlpha = 0.92;
+      ctx.fillStyle = "#231557";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = 1;
+      ctx.font = 'bold 54px "Segoe Script", system-ui, cursive';
+      ctx.fillStyle = "#ff61a6";
+      ctx.textAlign = 'center';
+      ctx.shadowColor = "#0ff0b3";
+      ctx.shadowBlur = 24;
+      ctx.fillText(`${winnerName} wins!`, canvas.width/2, canvas.height/2 - 20);
+      ctx.shadowBlur = 0;
+      ctx.font = '24px system-ui';
+      ctx.fillStyle = "#fffbe7";
+      ctx.fillText('Press R to restart', canvas.width/2, canvas.height/2 + 40);
+      ctx.restore();
+    }
 
     function loop(){
-      if (!running) return;
-      if (!paused) {
+      if (!running && !winner) return;
+      if (!paused && !winner) {
         update(); draw();
+      } else if (winner) {
+        showWinnerScreen(winner);
       }
       requestAnimationFrame(loop);
     }
 
     // Pause/Unpause on 'P'
     addEventListener('keydown', e => {
-      if (e.key.toLowerCase() === 'p') {
+      if (e.key.toLowerCase() === 'p' && running && !winner) {
         paused = !paused;
         // Show a pause overlay
         if (paused) {
@@ -180,19 +225,35 @@
           ctx.restore();
         }
       }
+      // Restart on 'R' if game ended
+      if (e.key.toLowerCase() === 'r' && winner) {
+        restartGame();
+      }
     });
 
     function startGame(isTwoPlayer) {
+      // Read win limit from input
+      const input = document.getElementById('winLimitInput');
+      WIN_LIMIT = Math.max(1, Math.min(20, parseInt(input.value) || 5));
       twoPlayer = isTwoPlayer;
       document.getElementById('startScreen').style.display = 'none';
       document.querySelector('h1').style.display = '';
       document.querySelector('p').style.display = '';
       running = true;
       paused = false;
+      winner = null;
       // Reset state
       state.paddleLeft.y = canvas.height/2 - 40;
       state.paddleRight.y = canvas.height/2 - 40;
       state.score.left = 0; state.score.right = 0;
+      resetBall(1);
+      loop();
+    }
+
+    function restartGame() {
+      winner = null;
+      state.score.left = 0;
+      state.score.right = 0;
       resetBall(1);
       loop();
     }
