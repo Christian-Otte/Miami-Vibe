@@ -57,6 +57,7 @@
 </head>
 <body>
   <div id="startScreen">
+    <audio id="startMusic" src="jan-hammer-miami-vice-theme.mp3" loop></audio>
     <p>Select a mode:</p>
     <button onclick="startGame(false)">Single Player (W/S)</button>
     <button onclick="startGame(true)">2 Player (W/S & O/L)</button>
@@ -69,6 +70,7 @@
   </div>
   <h1 style="display:none;">Palm City Paddle</h1>
   <p style="display:none;">Controls: W / S</p>
+  <audio id="gameMusic" src="jan-hammer-crocketts-theme.mp3" loop></audio>
   <canvas id="game" width="800" height="500"></canvas>
   <!-- Miami Vice Palm Tree (left) -->
   <div style="position:fixed;left:0;bottom:0;z-index:2;pointer-events:none;width:120px;height:320px;">
@@ -264,6 +266,24 @@
       }
     });
 
+    // Play music on start screen, pause when game starts
+    window.addEventListener('DOMContentLoaded', () => {
+      const music = document.getElementById('startMusic');
+      if (music) {
+        music.volume = 0.5;
+        // Only play if the start screen is visible
+        const tryPlay = () => {
+          if (document.getElementById('startScreen').style.display !== 'none') {
+            music.currentTime = 0;
+            music.play().catch(()=>{});
+          }
+        };
+        // Try to play on load and on first user interaction
+        tryPlay();
+        window.addEventListener('click', tryPlay, { once: true });
+        window.addEventListener('keydown', tryPlay, { once: true });
+      }
+    });
     function startGame(isTwoPlayer) {
       // Read win limit from input
       const input = document.getElementById('winLimitInput');
@@ -280,14 +300,28 @@
       state.paddleRight.y = canvas.height/2 - 40;
       state.score.left = 0; state.score.right = 0;
       resetBall(1);
+      // Pause start screen music, play game music
+      const startMusic = document.getElementById('startMusic');
+      if (startMusic) startMusic.pause();
+      const gameMusic = document.getElementById('gameMusic');
+      if (gameMusic) {
+        gameMusic.currentTime = 0;
+        gameMusic.volume = 0.5;
+        gameMusic.play().catch(()=>{});
+      }
       loop();
     }
-
     function restartGame() {
       winner = null;
       state.score.left = 0;
       state.score.right = 0;
       resetBall(1);
+      // Play game music again if not playing
+      const gameMusic = document.getElementById('gameMusic');
+      if (gameMusic && gameMusic.paused) {
+        gameMusic.currentTime = 0;
+        gameMusic.play().catch(()=>{});
+      }
       loop();
     }
   </script>
