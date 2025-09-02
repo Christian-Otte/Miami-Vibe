@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Palm City Paddle</title>
+  <style>
+    body { background: linear-gradient(135deg, #231557 0%, #44107a 46%, #ff1361 100%); color:#fffbe7; font-family:system-ui; text-align:center; }
+    canvas { background: linear-gradient(180deg, #0ff0b3 0%, #ff61a6 100%); display:block; margin:24px auto; border-radius: 18px; box-shadow: 0 0 32px #ff61a6aa; }
+    #startScreen {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(34,0,51,0.92);
+      color: #fffbe7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    #startScreen h1 {
+      font-family: 'Segoe Script', cursive, system-ui;
+      font-size: 3em;
+      color: #ff61a6;
+      text-shadow: 0 0 16px #0ff0b3, 0 0 32px #ff61a6;
+      margin-bottom: 0.2em;
+    }
+    #startScreen button {
+      font-size: 1.5em;
+      margin: 12px;
+      padding: 10px 32px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #0ff0b3 0%, #ff61a6 100%);
+      color: #231557;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 12px #ff61a6aa;
+    }
+    #startScreen button:hover { background: linear-gradient(90deg, #ff61a6 0%, #0ff0b3 100%); color: #fff; }
+    #startScreen p {
+      color: #fffbe7;
+      text-shadow: 0 0 8px #0ff0b3;
+    }
+  </style>
+</head>
+<body>
+  <div id="startScreen">
+    <h1>Palm City Paddle</h1>
+    <p>Select a mode:</p>
+    <button onclick="startGame(false)">Single Player (W/S)</button>
+    <button onclick="startGame(true)">2 Player (W/S & O/L)</button>
+    <p style="margin-top:2em;font-size:0.9em;opacity:0.7;">Player 1 controls: W/S<br>Player 2 controls: O/L</p>
+  </div>
+  <h1 style="display:none;">Palm City Paddle</h1>
+  <p style="display:none;">Controls: W / S</p>
+  <canvas id="game" width="800" height="500"></canvas>
+  <script>
+    let twoPlayer = false;
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    const state = {
+      paddleLeft:  { x: 20, y: canvas.height/2 - 40, w: 12, h: 80, dy: 0, speed: 6 },
+      paddleRight: { x: canvas.width - 32, y: canvas.height/2 - 40, w: 12, h: 80, dy: 0, speed: 6 },
+      ball:        { x: canvas.width/2, y: canvas.height/2, r: 8, vx: 4, vy: 2 },
+      score:       { left: 0, right: 0 }
+    };
+
+    const keys = new Set();
+    addEventListener('keydown', e => keys.add(e.key.toLowerCase()));
+    addEventListener('keyup',   e => keys.delete(e.key.toLowerCase()));
+
+    function update() {
+      // Player 1 (left): W/S
+      const pL = state.paddleLeft;
+      pL.dy = (keys.has('w') ? -1 : 0) + (keys.has('s') ? 1 : 0);
+      pL.y += pL.dy * pL.speed;
+      pL.y = Math.max(0, Math.min(canvas.height - pL.h, pL.y));
+
+      // Player 2 (right): O/L or AI
+      const pR = state.paddleRight, b = state.ball;
+      if (twoPlayer) {
+        pR.dy = (keys.has('o') ? -1 : 0) + (keys.has('l') ? 1 : 0);
+        pR.y += pR.dy * pR.speed;
+      } else {
+        pR.y += Math.sign(b.y - (pR.y + pR.h/2)) * pR.speed * 0.9;
+      }
+      pR.y = Math.max(0, Math.min(canvas.height - pR.h, pR.y));
+
+      // Ball physics
+      b.x += b.vx; b.y += b.vy;
+      if (b.y - b.r < 0 || b.y + b.r > canvas.height) b.vy *= -1;
+
+      // Collisions
+      if (b.x - b.r < pL.x + pL.w && b.y > pL.y && b.y < pL.y + pL.h) {
+        b.x = pL.x + pL.w + b.r; b.vx *= -1.05; b.vy += (b.y - (pL.y + pL.h/2))*0.05;
+      }
+      if (b.x + b.r > pR.x && b.y > pR.y && b.y < pR.y + pR.h) {
+        b.x = pR.x - b.r; b.vx *= -1.05; b.vy += (b.y - (pR.y + pR.h/2))*0.05;
+      }
+
+      // Scoring
+      if (b.x < 0)  { state.score.right++; resetBall(-1); }
+      if (b.x > canvas.width) { state.score.left++;  resetBall(1); }
+    }
+
+    function resetBall(dir = 1) {
+      const b = state.ball;
+      b.x = canvas.width/2; b.y = canvas.height/2;
+      b.vx = 4 * dir; b.vy = (Math.random()*4 - 2);
+    }
+
+    function draw() {
+      // Miami Vice style colors
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw center line
+      for(let y=0; y<canvas.height; y+=32){
+        ctx.fillStyle = "#fffbe7";
+        ctx.fillRect(canvas.width/2-2, y, 4, 16);
+      }
+      // Paddles
+      ctx.fillStyle = "#0ff0b3";
+      ctx.shadowColor = "#0ff0b3";
+      ctx.shadowBlur = 16;
+      ctx.fillRect(state.paddleLeft.x,  state.paddleLeft.y,  state.paddleLeft.w,  state.paddleLeft.h);
+      ctx.fillStyle = "#ff61a6";
+      ctx.shadowColor = "#ff61a6";
+      ctx.fillRect(state.paddleRight.x, state.paddleRight.y, state.paddleRight.w, state.paddleRight.h);
+      ctx.shadowBlur = 0;
+      // Ball
+      ctx.beginPath();
+      ctx.arc(state.ball.x, state.ball.y, state.ball.r, 0, Math.PI*2);
+      ctx.closePath();
+      ctx.fillStyle = "#fffbe7";
+      ctx.shadowColor = "#fffbe7";
+      ctx.shadowBlur = 12;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      // Score
+      ctx.font = 'bold 40px "Segoe Script", system-ui, cursive';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = "#fffbe7";
+      ctx.shadowColor = "#ff61a6";
+      ctx.shadowBlur = 10;
+      ctx.fillText(`${state.score.left} : ${state.score.right}`, canvas.width/2, 60);
+      ctx.shadowBlur = 0;
+    }
+
+    let running = false;
+    let paused = false;
+
+    function loop(){
+      if (!running) return;
+      if (!paused) {
+        update(); draw();
+      }
+      requestAnimationFrame(loop);
+    }
+
+    // Pause/Unpause on 'P'
+    addEventListener('keydown', e => {
+      if (e.key.toLowerCase() === 'p') {
+        paused = !paused;
+        // Show a pause overlay
+        if (paused) {
+          ctx.save();
+          ctx.globalAlpha = 0.8;
+          ctx.fillStyle = '#231557';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalAlpha = 1;
+          ctx.font = 'bold 64px "Segoe Script", system-ui, cursive';
+          ctx.fillStyle = '#ff61a6';
+          ctx.textAlign = 'center';
+          ctx.shadowColor = "#0ff0b3";
+          ctx.shadowBlur = 20;
+          ctx.fillText('Paused', canvas.width/2, canvas.height/2);
+          ctx.shadowBlur = 0;
+          ctx.restore();
+        }
+      }
+    });
+
+    function startGame(isTwoPlayer) {
+      twoPlayer = isTwoPlayer;
+      document.getElementById('startScreen').style.display = 'none';
+      document.querySelector('h1').style.display = '';
+      document.querySelector('p').style.display = '';
+      running = true;
+      paused = false;
+      // Reset state
+      state.paddleLeft.y = canvas.height/2 - 40;
+      state.paddleRight.y = canvas.height/2 - 40;
+      state.score.left = 0; state.score.right = 0;
+      resetBall(1);
+      loop();
+    }
+  </script>
+</body>
+</html>
