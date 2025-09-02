@@ -19,7 +19,7 @@
     #startScreen {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(34,0,51,0.92);
+      background: rgba(34,0,51,0.92) url('Startscreen.png') center center / contain no-repeat;
       color: #fffbe7;
       display: flex;
       flex-direction: column;
@@ -57,7 +57,6 @@
 </head>
 <body>
   <div id="startScreen">
-    <h1>Palm City Paddle</h1>
     <p>Select a mode:</p>
     <button onclick="startGame(false)">Single Player (W/S)</button>
     <button onclick="startGame(true)">2 Player (W/S & O/L)</button>
