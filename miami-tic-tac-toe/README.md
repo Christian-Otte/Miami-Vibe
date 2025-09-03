@@ -1,49 +1,58 @@
-# Miami Tic Tac Toe
+# TicTacPalm
 
-Welcome to the Miami Tic Tac Toe game! This project is a fun and interactive implementation of the classic Tic Tac Toe game, designed with a vibrant Miami vibe. Below are the instructions for installation and running the game.
+Welcome to TicTacPalm! This is a vibrant, Miami-themed Tic Tac Toe game featuring:
+
+- **Dynamic grid sizes:** Play on 3x3, 4x4, or 5x5 boards.
+- **Single or Two Player:** Choose to play against a friend or the CPU.
+- **Bot difficulties:** Easy, Normal, and Cheater (with subtle cheating).
+- **Custom icons:** Car (🚗) for X, Pistol (🔫) for O.
+- **Scoreboard:** Tracks all games with player names, mode, difficulty, grid size, winner, and score (+1 for winner, 0 for draw/loser). Scoreboard is shown in a modal and persists in browser memory.
+- **Miami theme:** Neon colors, sunset background (TicTacPalm.jpg), and styled UI.
+- **Background music:** Plays from the welcome screen (back-music.wav) and stops when a game ends.
+- **Responsive design:** Works on desktop and mobile.
 
 ## Table of Contents
 - [Installation](#installation)
-- [Running the Game](#running-the-game)
-- [Game Features](#game-features)
-- [Contributing](#contributing)
+- [How to Run](#how-to-run)
+- [Features](#features)
+- [Repository](#repository)
 - [License](#license)
 
 ## Installation
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/yourusername/miami-tic-tac-toe.git
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/yourusername/TicTacPalm.git
    ```
-   
-2. **Navigate to the project directory**:
-   ```bash
-   cd miami-tic-tac-toe
+2. **Navigate to the project directory:**
+   ```sh
+   cd TicTacPalm/miami-tic-tac-toe
    ```
 
-3. **Open the project in your preferred code editor**.
+## How to Run
 
-4. **Install any necessary dependencies** (if applicable). This project does not require any additional libraries, but ensure you have a modern web browser.
+1. Open the `src/index.html` file in your web browser (double-click or right-click and choose "Open with" your browser).
+2. You will see the welcome page where you can enter player names, select mode, bot difficulty, and grid size.
+3. Click "Start Game" to begin. The background music will play automatically (may require a click due to browser restrictions).
+4. Play by clicking cells. The first move is random. Car icon (🚗) is X, pistol icon (🔫) is O.
+5. When the game ends, scores update and the winner row is highlighted.
+6. All games are tracked in the scoreboard modal, which persists in your browser. Click the "Scoreboard" button to view or reset scores.
 
-## Running the Game
+## Features
 
-1. Open the `src/index.html` file in your web browser.
-2. You will be greeted with a welcome page where you can enter your username.
-3. Click on "Start Game" to begin playing Tic Tac Toe.
-4. The game will track your score and display it on the screen.
+- **Grid Size:** 3x3, 4x4, 5x5
+- **Modes:** Single Player (vs CPU), Two Player
+- **Bot Difficulty:** Easy (random), Normal (smart), Cheater (subtle cheating)
+- **Scoreboard:** Tracks all games, persistent via browser memory
+- **Miami Theme:** Neon colors, sunset background, custom icons
+- **Background Music:** Plays from welcome screen, stops on game end
+- **Responsive Design:** Mobile and desktop friendly
 
-## Game Features
+## Repository
 
-- **User Input**: Enter your username to personalize your gaming experience.
-- **Score Tracking**: The game keeps track of wins, losses, and draws for each player.
-- **Responsive Design**: The game is designed to be played on various devices with a Miami-inspired aesthetic.
-
-## Contributing
-
-If you would like to contribute to this project, feel free to fork the repository and submit a pull request. Any improvements or suggestions are welcome!
+[GitHub Repository](https://github.com/yourusername/TicTacPalm)
 
 ## License
+MIT
 
-This project is licensed under the MIT License. See the LICENSE file for more details. 
-
-Enjoy playing Miami Tic Tac Toe!
+Enjoy playing TicTacPalm!

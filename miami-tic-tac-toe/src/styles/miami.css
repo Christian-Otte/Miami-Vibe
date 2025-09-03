@@ -1,107 +1,186 @@
 body {
-    background-color: #ffcc00; /* Bright Miami yellow */
-    font-family: 'Arial', sans-serif;
-    color: #005f73; /* Deep teal for text */
+    background: url('../assets/TicTacPalm.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Arial Black', 'Arial', sans-serif;
+    color: #00eaff;
+    margin: 0;
+    min-height: 100vh;
+}
+
+h1#game-title {
+    font-family: 'Arial Black', 'Arial', sans-serif;
+    font-size: 2.5em;
+    color: #00eaff;
+    text-shadow: 0 0 20px #00eaff, 0 0 40px #ff2fd6;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+h2, h3 {
+    color: #ff2fd6;
+    text-shadow: 0 0 10px #ff2fd6;
+    font-family: 'Arial Black', 'Arial', sans-serif;
+    text-align: center;
+}
+
+.welcome-screen, .game-screen, .winner-screen, .winner-modal {
+    background: rgba(20, 0, 40, 0.7);
+    border-radius: 24px;
+    box-shadow: 0 0 40px #ff2fd6, 0 0 80px #00eaff;
+    padding: 32px 24px;
+    margin: 40px auto;
+    max-width: 480px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 320px;
+    overflow: visible;
 }
 
-h1 {
-    font-size: 3em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+button, select {
+    font-family: 'Arial Black', 'Arial', sans-serif;
+    font-size: 1.3em;
+    background: linear-gradient(90deg, #00eaff 0%, #ff2fd6 100%);
+    color: #fff;
+    border: 3px solid #00eaff;
+    border-radius: 14px;
+    box-shadow: 0 0 12px #ff2fd6, 0 0 24px #00eaff;
+    padding: 10px 28px;
+    margin: 16px 0;
+    cursor: pointer;
+    transition: box-shadow 0.2s, background 0.2s, font-size 0.2s;
+}
+button:hover {
+    box-shadow: 0 0 24px #ff2fd6, 0 0 48px #00eaff;
+    background: linear-gradient(90deg, #ff2fd6 0%, #00eaff 100%);
+    font-size: 1.5em;
 }
 
-.welcome {
-    text-align: center;
-    margin-bottom: 20px;
+select {
+    font-family: 'Arial Black', 'Arial', sans-serif;
+    font-size: 1.3em;
+    background: linear-gradient(90deg, #00eaff 0%, #ff2fd6 100%);
+    color: #fff;
+    border: 3px solid #00eaff;
+    border-radius: 14px;
+    box-shadow: 0 0 12px #ff2fd6, 0 0 24px #00eaff;
+    padding: 10px 28px;
+    margin: 16px 0;
+    cursor: pointer;
+    transition: box-shadow 0.2s, background 0.2s;
+    min-width: 180px;
+    max-width: 100%;
+    display: inline-block;
+}
+select:hover {
+    box-shadow: 0 0 24px #ff2fd6, 0 0 48px #00eaff;
+    background: linear-gradient(90deg, #ff2fd6 0%, #00eaff 100%);
+    font-size: 1.3em;
+}
+
+input[type="text"] {
+    font-size: 1.1em;
+    border: 2px solid #ff2fd6;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 8px 0;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    box-shadow: 0 0 8px #ff2fd6;
+    min-width: 160px;
+    max-width: 100%;
+    display: inline-block;
+}
+input[type="text"]::placeholder {
+    color: #00eaff;
+    opacity: 1;
 }
 
 .game-board {
     display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-template-rows: repeat(3, 100px);
-    gap: 5px;
+    gap: 10px;
+    justify-content: center;
+    margin: 30px 0;
 }
-
 .cell {
-    width: 100px;
-    height: 100px;
-    background-color: #ff6f61; /* Coral color for cells */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.cell:hover {
-    background-color: #ff4c3b; /* Darker coral on hover */
-}
-
-.scoreboard {
-    margin-top: 20px;
-    font-size: 1.5em;
-}
-
-.username-input {
-    margin-top: 20px;
-    padding: 10px;
-    font-size: 1em;
-    border: 2px solid #005f73; /* Teal border */
-    border-radius: 5px;
-}
-
-button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 1em;
-    background-color: #005f73; /* Teal button */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #003f4f; /* Darker teal on hover */
-}
-
-/* Winner screen styling */
-.winner-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.95);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-.winner-screen h2 {
+    width: 80px;
+    height: 80px;
+    background: rgba(0,0,0,0.7);
+    border: 3px solid #00eaff;
+    border-radius: 12px;
     font-size: 2.5em;
-    margin-bottom: 20px;
-}
-.winner-screen .score-board {
-    margin-bottom: 20px;
-}
-.winner-screen button {
-    font-size: 1.2em;
-    padding: 12px 32px;
-}
-
-/* Ensure game screen is also centered and not overlapping */
-.game-screen {
+    color: #ff2fd6;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 0 10px #ff2fd6;
+    transition: background 0.2s, border 0.2s;
+}
+.cell:hover {
+    background: rgba(255,47,214,0.2);
+    border-color: #ff2fd6;
+}
+.cell.winner {
+    background: #4caf50 !important;
+    color: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 20px #4caf50;
+}
+
+.score-board, .scoreboard {
+    background: rgba(0,0,0,0.5);
+    border-radius: 12px;
+    padding: 12px 24px;
+    margin: 20px 0;
+    color: #fff;
+    font-size: 1.2em;
+    box-shadow: 0 0 10px #00eaff;
+}
+
+.winner-modal[hidden] {
+    display: none;
+}
+
+/* Hidden text that appears on hover */
+.hover-reveal {
+    opacity: 1;
+    pointer-events: auto;
+    position: static;
+    background: rgba(0,0,0,0.7);
+    color: #00eaff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 1em;
+    z-index: 10;
+    display: inline-block;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    transition: none;
+}
+.button-group {
+    position: relative;
+    display: inline-block;
+}
+.button-group:hover .hover-reveal {
+    opacity: 1;
+}
+
+.player-options, #player-names {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    h1#game-title { font-size: 2em; }
+    .cell { width: 48px; height: 48px; font-size: 1.5em; }
+    .welcome-screen, .game-screen, .winner-screen, .winner-modal { max-width: 98vw; padding: 8vw 2vw; }
 }

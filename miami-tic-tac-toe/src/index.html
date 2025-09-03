@@ -3,49 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miami Tic Tac Toe</title>
+    <title>TicTacPalm</title>
     <link rel="stylesheet" href="styles/miami.css">
 </head>
 <body>
     <div class="welcome-screen">
-        <h1>Miami Tic Tac Toe</h1>
-        <div class="score-board">
-            <h3>Scoreboard</h3>
-            <ul id="scoreboard-list"></ul>
+        <h1 id="game-title">TicTacPalm</h1>
+        <div class="player-options form-row-group">
+            <div class="form-row">
+                <label for="player-mode">Choose mode:</label>
+                <select id="player-mode">
+                    <option value="1">Single Player</option>
+                    <option value="2">Two Players</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="bot-difficulty" id="bot-difficulty-label" style="display:none;">Bot Difficulty:</label>
+                <select id="bot-difficulty" style="display:none;">
+                    <option value="easy">Easy</option>
+                    <option value="normal">Normal</option>
+                    <option value="cheater">Cheater</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="grid-size" id="grid-size-label">Grid Size:</label>
+                <select id="grid-size">
+                    <option value="3">3x3</option>
+                    <option value="4">4x4</option>
+                    <option value="5">5x5</option>
+                </select>
+            </div>
         </div>
-        <div class="player-options">
-            <label for="player-mode">Choose mode:</label>
-            <select id="player-mode">
-                <option value="1">Single Player</option>
-                <option value="2">Two Players</option>
-            </select>
-        </div>
-        <div id="player-names">
-            <input type="text" id="player1-name" placeholder="Player 1 Name" />
-            <input type="text" id="player2-name" placeholder="Player 2 Name" style="display:none;" />
+        <div id="player-names" class="form-row-group">
+            <div class="form-row">
+                <label for="player1-name">Player 1 Name:</label>
+                <input type="text" id="player1-name" placeholder="Player 1 Name" />
+            </div>
+            <div class="form-row" id="player2-row" style="display:none;">
+                <label for="player2-name">Player 2 Name:</label>
+                <input type="text" id="player2-name" placeholder="Player 2 Name" />
+            </div>
         </div>
         <button id="start-game">Start Game</button>
+        <button id="show-scoreboard" style="margin-top: 12px;">Scoreboard</button>
+    </div>
+    <div id="scoreboard-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(20,0,40,0.95); z-index:3000; align-items:center; justify-content:center;">
+        <div style="background:rgba(0,0,0,0.8); border-radius:24px; box-shadow:0 0 40px #ff2fd6,0 0 80px #00eaff; padding:32px; max-width:700px; margin:auto;">
+            <h2 style="text-align:center; color:#00eaff;">Scoreboard</h2>
+            <table id="scoreboard-table" style="width:100%; color:#fff; border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#ff2fd6; color:#fff;">
+                        <th>Player 1</th>
+                        <th>Player 2</th>
+                        <th>Mode</th>
+                        <th>Difficulty</th>
+                        <th>Size</th>
+                        <th>Winner</th>
+                        <th>Score 1</th>
+                        <th>Score 2</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button id="close-scoreboard" style="margin-top:24px;">Close</button>
+        </div>
     </div>
     <div class="game-screen" style="display: none;">
+        <h1 id="game-title">TicTacPalm</h1>
         <h2 id="player-turn"></h2>
-        <div class="game-board">
-            <div class="cell" data-index="0"></div>
-            <div class="cell" data-index="1"></div>
-            <div class="cell" data-index="2"></div>
-            <div class="cell" data-index="3"></div>
-            <div class="cell" data-index="4"></div>
-            <div class="cell" data-index="5"></div>
-            <div class="cell" data-index="6"></div>
-            <div class="cell" data-index="7"></div>
-            <div class="cell" data-index="8"></div>
-        </div>
+        <div class="game-board" id="game-board"></div>
         <button id="reset-game">Reset Game</button>
-        <div class="score-board">
-            <h3>Score</h3>
-            <p id="score-display">Player: 0</p>
-        </div>
+        <button id="return-main" style="margin-top: 12px;">Return to Main</button>
     </div>
     <div class="winner-screen" style="display: none;">
+        <h1 id="game-title">TicTacPalm</h1>
         <h2 id="winner-message"></h2>
         <div class="score-board">
             <h3>Scoreboard</h3>
@@ -53,6 +84,16 @@
         </div>
         <button id="play-again">Play Again</button>
     </div>
+    <div class="winner-modal" id="winner-modal" hidden>
+        <h1 id="game-title">TicTacPalm</h1>
+        <h2 id="winner-modal-message"></h2>
+        <div class="score-board">
+            <h3>Scoreboard</h3>
+            <ul id="winner-modal-scoreboard-list"></ul>
+        </div>
+        <button id="winner-modal-play-again">Play Again</button>
+    </div>
+    <audio id="background-music" src="assets/back-music.wav" loop autoplay></audio>
     <script src="scripts/main.js"></script>
     <script src="scripts/game.js"></script>
     <script src="scripts/score.js"></script>
