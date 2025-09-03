@@ -178,6 +178,49 @@ input[type="text"]::placeholder {
     width: 100%;
 }
 
+#scoreboard-table th, #scoreboard-table td {
+    padding: 8px 12px;
+    text-align: center;
+    border-bottom: 1px solid #00eaff;
+    font-size: 0.95em;
+}
+#scoreboard-table th {
+    background: #ff2fd6;
+    color: #fff;
+    font-size: 1em;
+    border-right: 2px solid #fff;
+}
+#scoreboard-table td {
+    background: rgba(0,0,0,0.5);
+    color: #00eaff;
+    font-size: 0.95em;
+    border-right: 1px solid #ff2fd6;
+}
+#scoreboard-table tr:last-child td {
+    border-bottom: none;
+}
+#scoreboard-table th:last-child, #scoreboard-table td:last-child {
+    border-right: none;
+}
+#scoreboard-table {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #00eaff;
+    overflow: hidden;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+#scoreboard-modal > div {
+    max-width: 1200px;
+    width: 98vw;
+    min-width: 340px;
+    box-sizing: border-box;
+    overflow-x: auto;
+}
+
 /* Responsive adjustments */
 @media (max-width: 600px) {
     h1#game-title { font-size: 2em; }

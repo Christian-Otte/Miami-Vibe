@@ -33,18 +33,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render scoreboard table directly in welcome screen
     const welcomeScoreboardTableBody = document.createElement('tbody');
     function renderScoreboardTableWelcome() {
-        welcomeScoreboardTableBody.innerHTML = scoreboardTable.map(row => `
-            <tr>
-                <td>${row.player1}</td>
-                <td>${row.player2}</td>
-                <td>${row.mode}</td>
-                <td>${row.difficulty}</td>
-                <td>${row.size}x${row.size}</td>
-                <td>${row.winner}</td>
-                <td>${row.score1}</td>
-                <td>${row.score2}</td>
-            </tr>
-        `).join('');
+        // Ensure the table is in the DOM
+        if (!welcomeScoreboardTable.parentNode) {
+            document.querySelector('.welcome-screen').appendChild(welcomeScoreboardTable);
+        }
+        // If there are no scores, show a message
+        if (!scoreboardTable.length) {
+            welcomeScoreboardTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ff2fd6;">No games played yet.</td></tr>';
+        } else {
+            welcomeScoreboardTableBody.innerHTML = scoreboardTable.map(row => `
+                <tr>
+                    <td>${row.player1}</td>
+                    <td>${row.player2}</td>
+                    <td>${row.mode}</td>
+                    <td>${row.difficulty}</td>
+                    <td>${row.size}x${row.size}</td>
+                    <td>${row.winner}</td>
+                    <td>${row.score1}</td>
+                    <td>${row.score2}</td>
+                </tr>
+            `).join('');
+        }
     }
 
     // Insert scoreboard table into welcome screen
@@ -127,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerModeSelect = document.getElementById('player-mode');
     const botDifficultySelect = document.getElementById('bot-difficulty');
     const botDifficultyLabel = document.getElementById('bot-difficulty-label');
+    const player2Row = document.getElementById('player2-row');
     if (playerModeSelect) {
         playerModeSelect.style.display = '';
         playerMode = parseInt(playerModeSelect.value, 10);
@@ -152,6 +162,19 @@ document.addEventListener('DOMContentLoaded', () => {
             botDifficultyLabel.style.display = 'none';
             player2Input.style.display = '';
         }
+    }
+
+    // Show player 2 name input in two player mode
+    if (playerModeSelect && player2Row) {
+        function updatePlayer2Visibility() {
+            if (parseInt(playerModeSelect.value, 10) === 2) {
+                player2Row.style.display = '';
+            } else {
+                player2Row.style.display = 'none';
+            }
+        }
+        playerModeSelect.addEventListener('change', updatePlayer2Visibility);
+        updatePlayer2Visibility();
     }
 
     // Store last used playerMode for Play Again
@@ -278,14 +301,19 @@ document.addEventListener('DOMContentLoaded', () => {
         window.startTicTacToeGame(playerNames, playerMode, scoreboard, handleGameEnd, botDifficulty, gridSize);
     });
 
+    // Load and render scoreboard on page load and when returning to main
+    function showWelcomeScreen() {
+        document.querySelector('.game-screen').style.display = 'none';
+        document.querySelector('.winner-screen').style.display = 'none';
+        document.querySelector('.welcome-screen').style.display = '';
+        loadScoreboardTable();
+        renderScoreboardTableWelcome();
+        renderScoreboard();
+    }
+    document.getElementById('return-main').onclick = showWelcomeScreen;
+
     // Load and render scoreboard on page load
     loadScoreboardTable();
     renderScoreboardTableWelcome();
     renderScoreboard();
-
-    document.getElementById('return-main').onclick = () => {
-        document.querySelector('.game-screen').style.display = 'none';
-        document.querySelector('.winner-screen').style.display = 'none';
-        document.querySelector('.welcome-screen').style.display = '';
-    };
 });

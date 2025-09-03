@@ -198,21 +198,20 @@ window.startTicTacToeGame = function(playerNames, playerMode, scoreboard, onGame
             let winnerName = currentPlayer === 'X' ? playerNames.player1 : playerNames.player2;
             let loserName = currentPlayer === 'X' ? playerNames.player2 : playerNames.player1;
             let result = `${winnerName} (+1) vs ${loserName} (+0): ${winnerName} wins!`;
-            onGameEnd({ player1: winnerName, player2: loserName, result });
-            if (winningRow) {
-                winningRow.forEach(idx => {
-                    boardContainer.children[idx].classList.add('winner');
-                });
+            if (typeof score !== 'undefined') {
+                score.updateScore(currentPlayer === 'X' ? 'player1' : 'player2');
             }
-            document.querySelector('.winner-screen').style.display = '';
-            document.getElementById('winner-message').textContent = `${winnerName} wins!`;
+            alert(`${winnerName} wins!`);
+            onGameEnd({ player1: winnerName, player2: loserName, result });
             return;
         }
         if (!gameBoard.includes('')) {
             gameActive = false;
+            if (typeof score !== 'undefined') {
+                score.updateScore('draw');
+            }
+            alert(`It's a draw!`);
             onGameEnd({ player1: playerNames.player1, player2: playerNames.player2, result: 'Draw' });
-            document.querySelector('.winner-screen').style.display = '';
-            document.getElementById('winner-message').textContent = `It's a draw!`;
             return;
         }
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
