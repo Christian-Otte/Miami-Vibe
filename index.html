@@ -91,6 +91,7 @@
   <h1 style="display:none;">Palm City Paddle</h1>
   <p style="display:none;">Controls: W / S</p>
   <audio id="gameMusic" src="jan-hammer-crocketts-theme.mp3" loop></audio>
+  <audio id="hitSound" src="pong_hit.wav"></audio>
   <canvas id="game" width="800" height="500"></canvas>
   <!-- Miami Vice Palm Tree (left) -->
   <div style="position:fixed;left:0;bottom:0;z-index:2;pointer-events:none;width:120px;height:320px;">
@@ -167,9 +168,11 @@
       // Collisions
       if (b.x - b.r < pL.x + pL.w && b.y > pL.y && b.y < pL.y + pL.h) {
         b.x = pL.x + pL.w + b.r; b.vx *= -1.05; b.vy += (b.y - (pL.y + pL.h/2))*0.05;
+        playHitSound();
       }
       if (b.x + b.r > pR.x && b.y > pR.y && b.y < pR.y + pR.h) {
         b.x = pR.x - b.r; b.vx *= -1.05; b.vy += (b.y - (pR.y + pR.h/2))*0.05;
+        playHitSound();
       }
 
       // Scoring
@@ -350,6 +353,13 @@
         gameMusic.play().catch(()=>{});
       }
       loop();
+    }
+    function playHitSound() {
+      const sound = document.getElementById('hitSound');
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(()=>{});
+      }
     }
   </script>
 </body>
