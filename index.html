@@ -86,6 +86,11 @@
       <input id="levelInput" type="number" min="1" max="10" value="1" style="width:3em; font-size:1em; border-radius:4px; border:none; padding:2px 6px; margin:0 4px;">
       (1 = slow, 10 = fast)
     </label>
+    <label style="margin-top:1em; font-size:1.1em; color:#fffbe7; text-shadow:0 0 8px #0ff0b3;">
+      Computer strength
+      <input id="aiStrengthInput" type="number" min="1" max="10" value="6" style="width:3em; font-size:1em; border-radius:4px; border:none; padding:2px 6px; margin:0 4px;">
+      (1 = weak, 10 = strong)
+    </label>
     <p style="margin-top:2em;font-size:0.9em;opacity:0.7;">Player 1 controls: W/S<br>Player 2 controls: O/L</p>
   </div>
   <h1 style="display:none;">Palm City Paddle</h1>
@@ -128,6 +133,7 @@
     let WIN_LIMIT = 5;
     let LEVEL = 1;
     let BASE_BALL_SPEED = 4;
+    let AI_STRENGTH = 6;
 
     const state = {
       paddleLeft:  { x: 20, y: canvas.height/2 - 40, w: 12, h: 80, dy: 0, speed: 6 },
@@ -159,7 +165,12 @@
         pR.dy = (keys.has('o') ? -1 : 0) + (keys.has('l') ? 1 : 0);
         pR.y += pR.dy * pR.speed;
       } else {
-        pR.y += Math.sign(b.y - (pR.y + pR.h/2)) * pR.speed * 0.9;
+        // AI paddle speed is AI_STRENGTH, but movement should be smooth and frame-rate independent
+        // Use a capped delta to avoid overshooting
+        let target = b.y - (pR.y + pR.h/2);
+        let maxMove = AI_STRENGTH * 0.9;
+        let move = Math.max(-maxMove, Math.min(maxMove, target));
+        pR.y += move;
       }
       pR.y = Math.max(0, Math.min(canvas.height - pR.h, pR.y));
 
@@ -322,6 +333,8 @@
       WIN_LIMIT = Math.max(1, Math.min(20, parseInt(input.value) || 5));
       const levelInput = document.getElementById('levelInput');
       LEVEL = Math.max(1, Math.min(10, parseInt(levelInput.value) || 1));
+      const aiInput = document.getElementById('aiStrengthInput');
+      AI_STRENGTH = Math.max(1, Math.min(10, parseInt(aiInput.value) || 6));
       twoPlayer = isTwoPlayer;
       document.getElementById('startScreen').style.display = 'none';
       document.querySelector('h1').style.display = '';
@@ -333,6 +346,13 @@
       state.paddleLeft.y = canvas.height/2 - 40;
       state.paddleRight.y = canvas.height/2 - 40;
       state.score.left = 0; state.score.right = 0;
+      // Set right paddle height based on AI strength (shorter = stronger)
+      if (!isTwoPlayer) {
+        // Paddle height: 120 (weak) to 40 (strong)
+        state.paddleRight.h = 120 - (AI_STRENGTH - 1) * 8;
+      } else {
+        state.paddleRight.h = 80; // default for 2P
+      }
       resetBall(1);
       // Pause start screen music, play game music
       const startMusic = document.getElementById('startMusic');
@@ -350,6 +370,12 @@
       state.score.left = 0;
       state.score.right = 0;
       resetBall(1);
+      // Set right paddle height based on AI strength (shorter = stronger)
+      if (!twoPlayer) {
+        state.paddleRight.h = 120 - (AI_STRENGTH - 1) * 8;
+      } else {
+        state.paddleRight.h = 80;
+      }
       // Play game music again if not playing
       const gameMusic = document.getElementById('gameMusic');
       if (gameMusic && gameMusic.paused) {
