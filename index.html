@@ -93,6 +93,7 @@
   <audio id="gameMusic" src="jan-hammer-crocketts-theme.mp3" loop></audio>
   <audio id="hitSound" src="pong_hit.wav"></audio>
   <audio id="gameOverSound" src="pong_game_over_long.wav"></audio>
+  <audio id="pointLostSound" src="pong_point_lost.wav"></audio>
   <canvas id="game" width="800" height="500"></canvas>
   <!-- Miami Vice Palm Tree (left) -->
   <div style="position:fixed;left:0;bottom:0;z-index:2;pointer-events:none;width:120px;height:320px;">
@@ -177,8 +178,8 @@
       }
 
       // Scoring
-      if (b.x < 0)  { state.score.right++; checkWinner(); if(!winner) resetBall(-1); }
-      if (b.x > canvas.width) { state.score.left++;  checkWinner(); if(!winner) resetBall(1); }
+      if (b.x < 0)  { state.score.right++; playPointLostSound(); checkWinner(); if(!winner) resetBall(-1); }
+      if (b.x > canvas.width) { state.score.left++; playPointLostSound(); checkWinner(); if(!winner) resetBall(1); }
     }
 
     function checkWinner() {
@@ -366,6 +367,13 @@
     }
     function playGameOverSound() {
       const sound = document.getElementById('gameOverSound');
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(()=>{});
+      }
+    }
+    function playPointLostSound() {
+      const sound = document.getElementById('pointLostSound');
       if (sound) {
         sound.currentTime = 0;
         sound.play().catch(()=>{});
