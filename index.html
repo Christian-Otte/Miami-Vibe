@@ -24,9 +24,23 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      padding-top: 8vh;
       z-index: 10;
       font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .mode-buttons {
+      width: 100vw;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8vh 0 12vh 0;
+      pointer-events: auto;
+    }
+    .mode-buttons button {
+      min-width: 220px;
+      margin: 0 4vw;
     }
     #startScreen h1 {
       font-family: 'Segoe Script', cursive, system-ui;
@@ -58,13 +72,19 @@
 <body>
   <div id="startScreen">
     <audio id="startMusic" src="jan-hammer-miami-vice-theme.mp3" loop></audio>
-    <p>Select a mode:</p>
-    <button onclick="startGame(false)">Single Player (W/S)</button>
-    <button onclick="startGame(true)">2 Player (W/S & O/L)</button>
+    <div class="mode-buttons">
+      <button onclick="startGame(false)">Single Player (W/S)</button>
+      <button onclick="startGame(true)">2 Player (W/S & O/L)</button>
+    </div>
     <label style="margin-top:1.5em; font-size:1.1em; color:#fffbe7; text-shadow:0 0 8px #0ff0b3;">
       Play to 
       <input id="winLimitInput" type="number" min="1" max="20" value="5" style="width:3em; font-size:1em; border-radius:4px; border:none; padding:2px 6px; margin:0 4px;">
       wins
+    </label>
+    <label style="margin-top:1em; font-size:1.1em; color:#fffbe7; text-shadow:0 0 8px #0ff0b3;">
+      Level
+      <input id="levelInput" type="number" min="1" max="10" value="1" style="width:3em; font-size:1em; border-radius:4px; border:none; padding:2px 6px; margin:0 4px;">
+      (1 = slow, 10 = fast)
     </label>
     <p style="margin-top:2em;font-size:0.9em;opacity:0.7;">Player 1 controls: W/S<br>Player 2 controls: O/L</p>
   </div>
@@ -103,11 +123,13 @@
 
     // Configurable win limit (default 5, can be changed on start screen)
     let WIN_LIMIT = 5;
+    let LEVEL = 1;
+    let BASE_BALL_SPEED = 4;
 
     const state = {
       paddleLeft:  { x: 20, y: canvas.height/2 - 40, w: 12, h: 80, dy: 0, speed: 6 },
       paddleRight: { x: canvas.width - 32, y: canvas.height/2 - 40, w: 12, h: 80, dy: 0, speed: 6 },
-      ball:        { x: canvas.width/2, y: canvas.height/2, r: 8, vx: 4, vy: 2 },
+      ball:        { x: canvas.width/2, y: canvas.height/2, r: 8, vx: BASE_BALL_SPEED, vy: 2 },
       score:       { left: 0, right: 0 }
     };
 
@@ -170,7 +192,10 @@
     function resetBall(dir = 1) {
       const b = state.ball;
       b.x = canvas.width/2; b.y = canvas.height/2;
-      b.vx = 4 * dir; b.vy = (Math.random()*4 - 2);
+      // Ball speed depends on level
+      const speed = BASE_BALL_SPEED + (LEVEL - 1) * 1.2;
+      b.vx = speed * dir;
+      b.vy = (Math.random()*4 - 2) * (speed/BASE_BALL_SPEED);
     }
 
     function draw() {
@@ -285,9 +310,11 @@
       }
     });
     function startGame(isTwoPlayer) {
-      // Read win limit from input
+      // Read win limit and level from input
       const input = document.getElementById('winLimitInput');
       WIN_LIMIT = Math.max(1, Math.min(20, parseInt(input.value) || 5));
+      const levelInput = document.getElementById('levelInput');
+      LEVEL = Math.max(1, Math.min(10, parseInt(levelInput.value) || 1));
       twoPlayer = isTwoPlayer;
       document.getElementById('startScreen').style.display = 'none';
       document.querySelector('h1').style.display = '';
