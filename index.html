@@ -92,6 +92,7 @@
   <p style="display:none;">Controls: W / S</p>
   <audio id="gameMusic" src="jan-hammer-crocketts-theme.mp3" loop></audio>
   <audio id="hitSound" src="pong_hit.wav"></audio>
+  <audio id="gameOverSound" src="pong_game_over_long.wav"></audio>
   <canvas id="game" width="800" height="500"></canvas>
   <!-- Miami Vice Palm Tree (left) -->
   <div style="position:fixed;left:0;bottom:0;z-index:2;pointer-events:none;width:120px;height:320px;">
@@ -184,10 +185,12 @@
       if (state.score.left >= WIN_LIMIT) {
         winner = "Player 1";
         running = false;
+        playGameOverSound();
         showWinnerScreen(winner);
       } else if (state.score.right >= WIN_LIMIT) {
         winner = twoPlayer ? "Player 2" : "AI";
         running = false;
+        playGameOverSound();
         showWinnerScreen(winner);
       }
     }
@@ -356,6 +359,13 @@
     }
     function playHitSound() {
       const sound = document.getElementById('hitSound');
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(()=>{});
+      }
+    }
+    function playGameOverSound() {
+      const sound = document.getElementById('gameOverSound');
       if (sound) {
         sound.currentTime = 0;
         sound.play().catch(()=>{});
