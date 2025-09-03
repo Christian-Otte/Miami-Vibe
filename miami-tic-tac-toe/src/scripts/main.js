@@ -30,56 +30,22 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('scoreboardTable', JSON.stringify(scoreboardTable));
     }
 
-    // Render scoreboard table directly in welcome screen
-    const welcomeScoreboardTableBody = document.createElement('tbody');
-    function renderScoreboardTableWelcome() {
-        // Ensure the table is in the DOM
-        if (!welcomeScoreboardTable.parentNode) {
-            document.querySelector('.welcome-screen').appendChild(welcomeScoreboardTable);
+    // Add static demo results if scoreboard is empty
+    function addDemoResultsIfEmpty() {
+        if (!scoreboardTable || scoreboardTable.length === 0) {
+            scoreboardTable = [
+                {
+                    player1: 'Alice', player2: 'Bob', mode: 'Two', difficulty: 'easy', size: 3, winner: 'Alice', score1: 1, score2: 0
+                },
+                {
+                    player1: 'Eve', player2: 'Bot', mode: 'Single', difficulty: 'normal', size: 4, winner: 'Bot', score1: 0, score2: 1
+                },
+                {
+                    player1: 'Charlie', player2: 'Dana', mode: 'Two', difficulty: 'easy', size: 5, winner: 'Draw', score1: 0, score2: 0
+                }
+            ];
+            saveScoreboardTable();
         }
-        // If there are no scores, show a message
-        if (!scoreboardTable.length) {
-            welcomeScoreboardTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#ff2fd6;">No games played yet.</td></tr>';
-        } else {
-            welcomeScoreboardTableBody.innerHTML = scoreboardTable.map(row => `
-                <tr>
-                    <td>${row.player1}</td>
-                    <td>${row.player2}</td>
-                    <td>${row.mode}</td>
-                    <td>${row.difficulty}</td>
-                    <td>${row.size}x${row.size}</td>
-                    <td>${row.winner}</td>
-                    <td>${row.score1}</td>
-                    <td>${row.score2}</td>
-                </tr>
-            `).join('');
-        }
-    }
-
-    // Insert scoreboard table into welcome screen
-    const welcomeScoreboardTable = document.createElement('table');
-    welcomeScoreboardTable.style.width = '100%';
-    welcomeScoreboardTable.style.color = '#fff';
-    welcomeScoreboardTable.style.borderCollapse = 'collapse';
-    welcomeScoreboardTable.innerHTML = `
-        <thead>
-            <tr style="background:#ff2fd6; color:#fff;">
-                <th>Player 1</th>
-                <th>Player 2</th>
-                <th>Mode</th>
-                <th>Difficulty</th>
-                <th>Size</th>
-                <th>Winner</th>
-                <th>Score 1</th>
-                <th>Score 2</th>
-            </tr>
-        </thead>
-    `;
-    welcomeScoreboardTable.appendChild(welcomeScoreboardTableBody);
-
-    // Remove direct scoreboard table from welcome screen if present
-    if (welcomeScoreboardTable && welcomeScoreboardTable.parentNode) {
-        welcomeScoreboardTable.parentNode.removeChild(welcomeScoreboardTable);
     }
 
     // Show scoreboard modal
@@ -195,8 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let winner;
         let score1 = 0;
         let score2 = 0;
+        // Fix: calculate scores based on result and player names
         if (result.result === 'Draw') {
             winner = 'Draw';
+            score1 = 0;
+            score2 = 0;
         } else if (result.result.includes('wins!')) {
             // Extract winner and loser from result string
             const winnerMatch = result.result.match(/^(.*?) \(\+1\) vs (.*?) \(\+0\): (.*?) wins!/);
@@ -210,11 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     score2 = 1;
                 }
             } else {
+                // fallback: if result string is not in expected format
                 winner = result.player1;
                 score1 = 1;
                 score2 = 0;
             }
         }
+        // Always push scores to scoreboardTable
         scoreboardTable.push({
             player1: result.player1,
             player2: result.player2,
@@ -307,13 +278,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.winner-screen').style.display = 'none';
         document.querySelector('.welcome-screen').style.display = '';
         loadScoreboardTable();
-        renderScoreboardTableWelcome();
         renderScoreboard();
     }
     document.getElementById('return-main').onclick = showWelcomeScreen;
 
     // Load and render scoreboard on page load
     loadScoreboardTable();
-    renderScoreboardTableWelcome();
+    addDemoResultsIfEmpty();
     renderScoreboard();
 });
